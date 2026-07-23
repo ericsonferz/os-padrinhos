@@ -1,133 +1,154 @@
-# Os Padrinhos — API Boundaries
+# API Boundaries
 
-## Objetivo
+Este documento define os limites entre os diferentes módulos do sistema.
 
-Definir fronteiras entre módulos e futuras APIs.
+Cada módulo comunica apenas através de contratos bem definidos.
 
 ---
 
-# Planning Context
+# Objetivo
+
+Garantir baixo acoplamento.
+
+Evitar dependências cruzadas.
+
+Permitir evolução independente.
+
+---
+
+# Contextos
+
+## Wedding Planning
 
 Responsável por:
 
 - WeddingProject
 - WeddingEvent
 - WeddingStage
-- Needs
+
+Não conhece detalhes de persistência.
 
 ---
 
-Endpoints futuros:
+## Participants
 
-POST
+Responsável por:
 
-/projects
-
-
-GET
-
-/projects/{id}
-
-
-POST
-
-/projects/{id}/events
-
-
-POST
-
-/events/{id}/stages
-
+- Participant
+- ParticipantAssignment
 
 ---
 
-# Budget Context
+## Needs
+
+Responsável por:
+
+- Need
+- Need Templates
+- Planning Engine
+
+---
+
+## Budget
 
 Responsável por:
 
 - Budget
-- BudgetItems
-- Estimates
+- BudgetItem
+- Estimativas
 
-Endpoints:
+Nunca cria Needs.
 
-GET
-
-/stages/{id}/budget
-
-
-POST
-
-/budget-items
+Apenas reage a elas.
 
 ---
 
-# Marketplace Context
+## Marketplace
 
 Responsável por:
 
-- Vendors
-- VendorServices
-- Categories
+- Vendor
+- VendorCategory
+- VendorService
 
-Endpoints:
+Não altera o domínio do casamento.
 
-GET
-
-/vendors
-
-GET
-
-/services
-
+Apenas fornece soluções.
 
 ---
 
-# Booking Context
+## Booking
 
 Responsável por:
 
-- Contratações
-- Serviços reservados
+- ServiceBooking
 
-Endpoints:
-
-POST
-
-/bookings
-
-
-GET
-
-/bookings/{id}
-
+Representa contratos entre casal e fornecedor.
 
 ---
 
-# Execution Context
+## Analytics
 
 Responsável por:
 
-- Tasks
-- Checklist
-- Timeline
+- indicadores
+- estatísticas
+- previsões
 
-Endpoints:
+Nunca altera entidades do domínio.
 
-POST
-
-/tasks
-
-PATCH
-
-/tasks/{id}
+É apenas consumidor de eventos.
 
 ---
 
-# Analytics Context
+# Comunicação
 
-Responsável por:
+Preferencialmente:
 
-- métricas
-- custos médios
-- tendências
+Application Layer
+
+↓
+
+Repository Interfaces
+
+↓
+
+Domain Events
+
+Evitar comunicação direta entre módulos.
+
+---
+
+# Dependências Permitidas
+
+Planning
+
+↓
+
+Needs
+
+↓
+
+Budget
+
+↓
+
+Booking
+
+↓
+
+Analytics
+
+Marketplace permanece independente.
+
+---
+
+# Regra
+
+Um módulo nunca altera diretamente outro módulo.
+
+Toda comunicação ocorre através de:
+
+- Use Cases
+- Repository Interfaces
+- Domain Events

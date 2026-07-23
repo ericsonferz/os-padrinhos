@@ -1,331 +1,224 @@
-# DECISIONS.md
+# Architecture Decisions
 
-# Decisões Arquiteturais — Os Padrinhos
+Este documento regista todas as decisões arquiteturais consideradas oficiais.
 
-## Objetivo
-
-Este documento regista as decisões fundamentais do domínio do Os Padrinhos.
-
-Estas decisões devem ser consideradas a fonte de verdade antes de alterações estruturais no código.
+Sempre que uma decisão alterar o domínio, este documento deve ser atualizado.
 
 ---
 
-# 1. Aggregate Root Principal
+# ADR-001
 
-## Decisão
+## Domain-Driven Design
 
-`WeddingProject` é o Aggregate Root principal do sistema.
+**Decisão**
 
-## Responsabilidade
+O projeto segue Domain-Driven Design.
 
-Representa o projeto completo de planeamento do casamento.
+**Motivo**
 
-Inclui:
-
-* casal
-* eventos
-* participantes globais
-* estado do projeto
-* visão consolidada financeira e operacional
-
-Exemplo:
-
-```
-WeddingProject
-João & Maria
-2026
-```
+O problema é complexo e possui muitas regras de negócio.
 
 ---
 
-# 2. Separação entre Projeto, Evento e Stage
+# ADR-002
 
-## Decisão
+## Clean Architecture
 
-O domínio utiliza três níveis:
+O sistema segue uma arquitetura em camadas.
 
-```
-WeddingProject
-    |
-    WeddingEvent
-        |
-        WeddingStage
-```
+Frontend
+
+↓
+
+Application
+
+↓
+
+Domain
+
+↓
+
+Infrastructure
+
+---
+
+# ADR-003
+
+## Rich Domain Model
+
+Foi adotado um modelo rico mas pragmático.
+
+As entidades encapsulam comportamento.
+
+Domain Services existem apenas quando o comportamento não pertence naturalmente a nenhuma entidade.
 
 ---
 
-## WeddingProject
+# ADR-004
 
-Representa o projeto completo.
+## Aggregate Root
 
-Exemplo:
+WeddingProject é o Aggregate Root principal.
 
-```
-Casamento João + Maria
-```
+Nenhuma entidade externa modifica diretamente um agregado interno.
 
 ---
+
+# ADR-005
 
 ## WeddingEvent
 
-Representa acontecimentos macro dentro do projeto.
+Representa um macro-acontecimento.
 
 Exemplos:
 
-* Lobolo
-* Casamento
-* Xiguiane
-* After Party
+- Lobolo
+- Casamento
+- Xiguiane
+- After Party
 
-Cada evento possui:
-
-* participantes principais
-* orçamento agregado
-* checklist
-* stages
+Todo WeddingEvent possui pelo menos um WeddingStage.
 
 ---
 
+# ADR-006
+
 ## WeddingStage
 
-Representa uma unidade operacional com impacto real.
+Representa uma unidade operacional.
 
 Exemplos:
 
-* Civil
-* Religioso
-* Receção
-* Copo de Água
+- Civil
+- Religioso
+- Receção
 
-Um Stage possui:
+É o centro de:
 
-* local
-* horário
-* fornecedores
-* necessidades
-* orçamento
-* tarefas
+- orçamento
+- logística
+- fornecedores
+- necessidades
+- cronograma
 
 ---
 
-# 3. Regra de Peso do Domínio
-
-Nem tudo no casamento é uma entidade.
-
-## WeddingStage
-
-Existe quando possui:
-
-* regras próprias
-* orçamento próprio
-* fornecedores próprios
-* local próprio
-* impacto comercial
-
-Exemplo:
-
-```
-Receção
-DJ
-Buffet
-Decoração
-Espaço
-```
-
----
+# ADR-007
 
 ## AgendaItem
 
-Existe quando é apenas um ponto cronológico.
-
-Exemplo:
-
-```
-16:00 Entrada dos noivos
-16:30 Corte do bolo
-17:00 Primeira dança
-```
+AgendaItem representa apenas um ponto do cronograma.
 
 Não possui:
 
-* orçamento
-* fornecedor
-* convidados próprios
+- orçamento
+- fornecedores
+- convidados
+
+Exemplos:
+
+- Corte do bolo
+- Primeira dança
+- Entrada dos noivos
 
 ---
 
-# 4. Participantes
+# ADR-008
 
-## Decisão
+## Need
 
-Participantes pertencem ao WeddingEvent.
+Need representa uma decisão de planeamento.
 
-Não pertencem diretamente ao Stage.
+É o elo entre:
 
-Estrutura:
+Planeamento
 
-```
-WeddingEvent
-    |
-    Participants
-```
+↓
 
-Por defeito:
+Orçamento
 
-```
-Stage
-    herda participantes do Event
-```
+↓
 
----
+Marketplace
 
-## Exceções
+↓
 
-Quando necessário:
-
-```
-ParticipantAssignments
-```
-
-Exemplo:
-
-Civil:
-
-* pais
-* irmãos
-* padrinhos
-
-Receção:
-
-* todos convidados
+Contratação
 
 ---
 
-# 5. Need como unidade central
+# ADR-009
 
-## Decisão
+## ServiceBooking
 
-O sistema é orientado por necessidades, não por fornecedores.
+ServiceBooking representa um compromisso comercial.
 
-Fluxo:
+Nunca substitui a Need.
 
-```
-Need
- |
+A Need continua a existir mesmo que o fornecedor seja alterado.
+
+---
+
+# ADR-010
+
+## Vendor
+
+Vendor representa uma empresa.
+
+VendorService representa aquilo que essa empresa oferece.
+
+As categorias classificam fornecedores.
+
 VendorCategory
- |
+
+↓
+
+Vendor
+
+↓
+
 VendorService
- |
-Vendor
- |
-ServiceBooking
-```
-
-Exemplo:
-
-Necessidade:
-
-```
-Precisamos de fotografia
-```
-
-Não:
-
-```
-Queremos contratar fotógrafo X
-```
 
 ---
 
-# 6. Vendor e VendorService
+# ADR-011
 
-Fornecedor e serviço são conceitos separados.
+## Planeamento
 
-Exemplo:
+O sistema é orientado por necessidades.
 
-```
-Vendor
+O casal nunca começa escolhendo fornecedores.
 
-Studio XPTO
-
-    |
-    Services
-
-    Fotografia
-    Drone
-    Álbum
-    Streaming
-```
+Começa identificando necessidades.
 
 ---
 
-# 7. Orçamento
+# ADR-012
 
-O orçamento nasce das necessidades.
+## Planning Engine
 
-Fluxo:
+PlanningEngine é um Domain Service.
 
-```
-Need
- |
-BudgetItem
- |
-Stage Budget
- |
-Event Budget
- |
-Project Budget
-```
+É responsável por gerar:
 
-O total é sempre uma agregação.
+- Needs
+- Tasks
+- Estimativas
+
+a partir de templates culturais.
 
 ---
 
-# 8. Planning Engine
+# ADR-013
 
-O Planning Engine é um Domain Service.
+## Simplicidade
 
-Responsabilidade:
+Sempre que existir conflito entre:
 
-Transformar conhecimento cultural e operacional em:
+mais abstração
 
-* Needs
-* Tasks
-* BudgetItems preliminares
+ou
 
-Exemplo:
+mais simplicidade
 
-Criar:
-
-```
-WeddingStage = Receção
-```
-
-gera:
-
-```
-Need:
-- Catering
-- Música
-- Decoração
-- Fotografia
-- Segurança
-```
-
----
-
-# 9. Regra para implementação
-
-Antes de criar novas entidades perguntar:
-
-"Esta coisa possui comportamento próprio e impacto no negócio?"
-
-Se não:
-
-provavelmente é:
-
-* atributo
-* value object
-* agenda item
-
-e não uma entidade.
+escolhe-se simplicidade.

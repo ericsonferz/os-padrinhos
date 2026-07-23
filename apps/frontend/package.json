@@ -1,0 +1,12 @@
+{
+    "name": "@ospadrinhos/frontend",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+      "build": "echo Frontend build",
+      "lint": "echo Frontend lint",
+      "typecheck": "echo Frontend typecheck",
+      "test": "echo Frontend test"
+    }
+  }

@@ -1,23 +1,85 @@
-# Documentação do Os Padrinhos
+# Os Padrinhos
 
-Toda a documentação permanece organizada nas respetivas pastas.
+## Para Assistentes de IA
 
-Contudo, devido a limitações de algumas ferramentas de IA relativamente ao número de ficheiros carregados, existe um documento consolidado:
+Antes de analisar ou gerar código para este projeto, leia obrigatoriamente:
 
-> **project-knowledge.md**
+```
+docs/ai-knowledge-base.md
+```
 
-Este documento agrega integralmente o conteúdo de toda a documentação existente em:
+Este documento contém:
 
-- architecture/
-- domain/
-- product/
+- arquitetura oficial
+- decisões de domínio
+- linguagem ubíqua
+- regras de modelação
+- princípios DDD
+- estilo de código
+- ordem de implementação
 
-Sempre que qualquer documento for alterado, **project-knowledge.md** deve ser atualizado para refletir exatamente o mesmo conteúdo.
+Os restantes documentos em `/docs` aprofundam cada tema específico e devem ser consultados quando necessário.
 
-## Fonte oficial
+# Project Documentation Governance
 
-A documentação continua organizada por áreas.
+## Architecture & Implementation Progress Reports
 
-O ficheiro **project-knowledge.md** é apenas uma consolidação para consumo por ferramentas de IA.
+Todos os grandes marcos do projeto devem possuir um **Architecture & Implementation Progress Report** antes da passagem para a próxima fase.
 
-Não deve conter informação diferente da restante documentação.
+Estes relatórios servem como:
+
+* histórico das decisões técnicas;
+* evidência de implementação;
+* material de auditoria externa;
+* contexto para colaboradores humanos e agentes de IA.
+
+---
+
+## Localização
+
+Todos os relatórios ficam armazenados em:
+
+```
+docs/reports/
+```
+
+---
+
+## Convenção de nomes
+
+Formato obrigatório:
+
+```
+YYYY-MM-DD-HHMM-architecture-implementation-progress-report.md
+```
+
+Exemplo:
+
+```
+2026-07-22-1500-architecture-implementation-progress-report.md
+```
+
+---
+
+## Estrutura obrigatória
+
+Todos os relatórios devem conter:
+
+1. Objetivo da Fase Concluída
+2. Ficheiros Criados / Modificados
+3. Decisões Técnicas e de Domínio Tomadas
+4. Estado dos Testes
+5. Próxima Etapa Proposta
+
+---
+
+## Processo de Aprovação
+
+Uma fase só é considerada concluída quando:
+
+* a implementação estiver documentada;
+* os testes estiverem registados;
+* as decisões arquiteturais estiverem justificadas;
+* o relatório estiver criado.
+
+Depois disso, o projeto pode avançar para a próxima fase.

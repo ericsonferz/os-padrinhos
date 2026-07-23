@@ -1,197 +1,238 @@
-# ARCHITECTURE.md
-
-# Arquitetura Técnica — Os Padrinhos
+# System Architecture
 
 ## Objetivo
 
-Definir a organização técnica inicial.
+Este documento descreve a arquitetura global do **Os Padrinhos**.
+
+A arquitetura foi desenhada segundo os princípios de:
+
+- Domain-Driven Design (DDD)
+- Clean Architecture
+- SOLID
+- Rich Domain Model (Pragmático)
+- Event-Driven (quando fizer sentido)
+
+O domínio é o centro do sistema.
+
+Toda a restante arquitetura existe para servir o domínio.
 
 ---
 
-# Estilo Arquitetural
+# Visão Geral
 
-## Domain Driven Design (DDD)
+```
+                Frontend
+                    │
+                    ▼
+               HTTP / REST API
+                    │
+                    ▼
+             Application Layer
+                    │
+                    ▼
+              Domain Layer
+                    │
+                    ▼
+         Infrastructure Layer
+                    │
+                    ▼
+          Database / External APIs
+```
 
-Separação:
+As dependências apontam sempre para o domínio.
 
-```text
-Domain
+Nunca no sentido contrário.
+
+---
+
+# Camadas
+
+## Domain
+
+Representa o negócio.
+
+Contém:
+
+- Aggregates
+- Entities
+- Value Objects
+- Domain Events
+- Domain Services
+- Repository Interfaces
+
+Não conhece:
+
+- HTTP
+- Supabase
+- PostgreSQL
+- React
+- Next.js
+
+---
+
+## Application
+
+Coordena o domínio.
+
+Contém:
+
+- Use Cases
+- Commands
+- Queries
+- DTOs
+
+Não contém regras profundas de negócio.
+
+---
+
+## Infrastructure
+
+Implementa detalhes técnicos.
+
+Exemplos:
+
+- Supabase
+- PostgreSQL
+- REST
+- Storage
+- Authentication
+
+Pode depender do Domain.
+
+O Domain nunca depende dela.
+
+---
+
+## Frontend
+
+Interface do utilizador.
+
+Responsável por:
+
+- apresentação
+- navegação
+- estado da UI
+
+Nunca implementa regras de negócio.
+
+---
+
+# Estrutura Geral
+
+```
+Frontend
+
+↓
+
+API
+
+↓
 
 Application
 
+↓
+
+Domain
+
+↓
+
 Infrastructure
 
-Presentation
+↓
+
+Database
 ```
 
 ---
 
-# Estrutura proposta
+# Filosofia
 
-```text
-src
+O sistema é construído de dentro para fora.
 
-├── domain
+Primeiro:
 
-│   ├── wedding
+Domínio.
 
-│   ├── planning
+Depois:
 
-│   ├── budgeting
+Aplicação.
 
-│   ├── marketplace
+Só no fim:
 
-│   └── shared
-
-
-├── application
-
-│   ├── use-cases
-
-│   ├── commands
-│   └── queries
-
-
-├── infrastructure
-
-│   ├── database
-│   ├── repositories
-│   └── external-services
-
-
-└── presentation
-
-    ├── api
-    └── controllers
-```
+Infraestrutura e Interface.
 
 ---
 
 # Bounded Contexts
 
-## 1. Planning Context
+O domínio encontra-se dividido em vários contextos.
 
-Responsável por:
+- Wedding Planning
+- Participants
+- Budget
+- Marketplace
+- Vendors
+- Analytics
 
-* eventos
-* stages
-* necessidades
-* tarefas
-
----
-
-## 2. Budget Context
-
-Responsável por:
-
-* estimativas
-* custos
-* pagamentos
+Cada contexto possui responsabilidades próprias.
 
 ---
 
-## 3. Marketplace Context
+# Aggregate Root Principal
 
-Responsável por:
+WeddingProject
 
-* fornecedores
-* serviços
-* bookings
+É a porta de entrada do domínio.
+
+Todos os restantes agregados vivem direta ou indiretamente ligados ao projeto.
 
 ---
 
-## 4. Analytics Context
+# Agregados Principais
 
-Responsável por:
-
-* dados históricos
-* recomendações
-* inteligência
+- WeddingProject
+- WeddingEvent
+- WeddingStage
+- Participant
+- Vendor
+- Need
+- ServiceBooking
 
 ---
 
 # Domain Services
 
-## PlanningEngine
+Exemplos:
 
-Responsabilidade:
+PlanningEngine
 
-Gerar automaticamente:
+BudgetEstimator
 
-* Needs
-* Tasks
-* Budget inicial
+VendorMatcher
 
 ---
 
-Exemplo:
+# Eventos de Domínio
 
-Entrada:
+Exemplos:
 
-```text
-WeddingStage:
-Receção
-```
+NeedCreated
 
-Saída:
+NeedEstimated
 
-```text
-Needs:
+VendorBooked
 
-Catering
-DJ
-Decoração
-Fotografia
-```
+BudgetUpdated
+
+WeddingStageCompleted
 
 ---
 
-# Princípio de dependência
+# Objetivo Final
 
-Regra:
+Construir uma plataforma onde:
 
-```text
-Application depende de Domain
-
-Infrastructure depende de Application
-
-Domain não depende de nada
-```
-
----
-
-# Repositórios
-
-Interfaces vivem no domínio:
-
-```text
-WeddingProjectRepository
-
-VendorRepository
-
-BookingRepository
-```
-
-Implementações:
-
-Infrastructure.
-
----
-
-# Eventos de domínio futuros
-
-Possíveis:
-
-```text
-WeddingCreated
-
-StageCreated
-
-NeedGenerated
-
-BookingConfirmed
-
-PaymentCompleted
-```
-
----
+- o domínio controla o sistema;
+- a infraestrutura é substituível;
+- o código permanece simples;
+- novas funcionalidades podem ser adicionadas sem comprometer a arquitetura.
